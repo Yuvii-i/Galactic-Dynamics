@@ -3,6 +3,7 @@ from collections import namedtuple
 
 G = 1
 epsilon = 0.1
+zero_array = np.array([0.0,0.0])
 
 Particle = namedtuple('Particle', ['x', 'y', 'mass'])
 
@@ -79,41 +80,35 @@ class QuadNode:
         self.cy = (self.mass*self.cy + particle.mass*particle.y)/(self.mass + particle.mass)   
         self.mass += particle.mass
 
-    def compute_force(self, particle, theta):
+    def compute_acceleration(self, particle, theta=0.5):
         
         M = self.mass
-        m = particle.mass
-        r = np.array([self.cx - particle.x, self.cy - particle.y])
+        rx, ry = self.cx - particle.x, self.cy - particle.y
+        rnorm = rx**2 + ry**2 + epsilon**2
         d = self.x_max - self.x_min
         
         if self.is_empty():
-            return np.array([0.0,0.0])
+            return zero_array
         
         elif self.is_leaf():
             if self.particle is particle:
-                return np.array([0.0,0.0])
+                return zero_array
             
             else:
-                return G*M*m*r/(np.linalg.norm(r)**2 + epsilon**2)**(3/2)
+                return G*M*rx/(rnorm)**(3/2), G*M*ry/(rnorm)**(3/2)
         
-        elif d/np.linalg.norm(r) < theta:
-            return G*M*m*r/(np.linalg.norm(r)**2 + epsilon**2)**(3/2)
+        elif d/np.sqrt(rx**2 + ry**2) < theta:
+            return G*M*rx/(rnorm)**(3/2), G*M*ry/(rnorm)**(3/2)
         
         else:
-            F = np.zeros((4,2))
+            Fx , Fy = 0.0, 0.0
             
-            for i in range(4):
-                F[i] =self.children[i].compute_force(particle, theta)
+            for child in self.children:
+                fx, fy =child.compute_acceleration(particle, theta)
+                Fx += fx
+                Fy += fy
                 
-            return np.sum(F, axis=0)
+            return Fx, Fy
         
-Q = QuadNode(-2,2,-2,2)
-
-p1 = Particle(-1.0, 0.0, 1.0)
-p2 = Particle(1.0, 0.0, 1.0)
-
-[Q.insert(i) for i in [p1,p2]]
-
-print(Q.compute_force(p1,0.5))
-
- 
+        
+        

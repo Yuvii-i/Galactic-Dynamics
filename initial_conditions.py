@@ -33,8 +33,3 @@ def make_disc(N,Rd,M):
     vy = v * np.cos(theta)
     
     return np.transpose(np.array([x,y])) , np.transpose(np.array([vx,vy]))
-
-x, v = make_disc(10000, 1.0, 1.0)
-
-plt.scatter(x[:, 0], x[: , 1])
-plt.show()

@@ -32,4 +32,12 @@ def make_disc(N,Rd,M):
     vx = - v * np.sin(theta)
     vy = v * np.cos(theta)
     
-    return np.transpose(np.array([x,y])) , np.transpose(np.array([vx,vy]))
+    center_pos = np.array([0.0,0.0])
+    center_vel = np.array([0.0,0.0])
+    
+    pos = np.vstack([center_pos, np.transpose(np.array([x,y]))])
+    vel = np.vstack([center_vel, np.transpose(np.array([vx,vy]))])
+    
+    mass = np.concatenate([[M], np.full(N, M/N)])
+    
+    return pos , vel, mass

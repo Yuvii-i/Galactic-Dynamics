@@ -3,6 +3,7 @@ from barnes_hut import *
 from initial_conditions import make_disc
 from leapfrog import leapfrog_step
 from animation import *
+from energy import *
 
 def run_simulation(p, v, mass, dt, steps, theta, save_every=1):
     
@@ -120,11 +121,19 @@ N = 500
 Rd = 1.0
 M = 1.0
 
-position, velocity, mass = make_disc(N, Rd, M)
+pos1, vel1, mass1 = make_disc(500, 1.0, 10.0, 0.1)
+pos2, vel2, mass2 = make_disc(500, 1.0, 10.0, 0.5)
+pos3, vel3, mass3 = make_disc(500, 1.0, 10.0, 2.0)
 
-r_mid, Q = measure_Q(position,velocity, mass, 20)
 
-plt.plot(r_mid, Q)
+p1,v1,s1 = run_simulation(pos1, vel1, mass1, dt=0.01, steps=500, theta=0.5)
+p2,v2,s2 = run_simulation(pos2, vel2, mass2, dt=0.01, steps=500, theta=0.5)
+p3,v3,s3 = run_simulation(pos3, vel3, mass3, dt=0.01, steps=500, theta=0.5)
+
+t = np.arange(500)
+
+plt.plot(t,s1, label="Sigma=0.1")
+plt.plot(t,s2, label="Sigma=0.5")
+plt.plot(t,s3, label="Sigma=2.0")
+plt.legend()
 plt.show()
-
- 

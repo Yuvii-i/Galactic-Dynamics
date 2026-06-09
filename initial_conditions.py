@@ -4,7 +4,7 @@ import random
 
 G = 1
 
-def make_disc(N,Rd,M):
+def make_disc(N,Rd,M, sigma):
     
     p = lambda r: (1/Rd**2) * r * np.exp(-r/Rd)
     
@@ -28,9 +28,13 @@ def make_disc(N,Rd,M):
     x = r*np.cos(theta)
     y = r*np.sin(theta)
     
-    v = np.sqrt(G*M/r)
+    v = 1.2*np.sqrt(G*M/r)
     vx = - v * np.sin(theta)
     vy = v * np.cos(theta)
+    
+    
+    vx += np.random.normal(0, sigma, N)
+    vy += np.random.normal(0, sigma, N)
     
     center_pos = np.array([0.0,0.0])
     center_vel = np.array([0.0,0.0])

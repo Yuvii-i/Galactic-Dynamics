@@ -183,6 +183,7 @@ steps = 500
 | `initial_conditions.py` | make_disc() — exponential disk with circular velocities |
 | `leapfrog.py` | Single leapfrog timestep |
 | `simulation.py` | Main simulation loop |
+| `energy.py` | Energy calculation |
 | `analysis.py` | Surface density, Toomre Q, spiral strength measurement |
 | `animation.py` | Visualization |
  

@@ -116,7 +116,81 @@ Both point in the same direction after the ×2 operation, so they add up. In a u
 
 ### Surface Density
 
-I verified the initial conditions by binning particles into radial rings and measured the surface density Σ(r) = mass in ring / ring area. On a log scale this looks almost as linear line, confirming that the initial conditions are therfore of exponential profile.
+I verified the initial conditions by binning particles into radial rings and measured the surface density Σ(r) = mass in ring / ring area. On a log scale the approximately linear trend confirms the exponential distribution, with noise at large radii due to low particle count in outer bins.
 
+![surface density plot](surface_density.png)
 
+### Toomre Q Profile
 
+For the main run(N=500, M=10.0, R_d=1.0, σ_v=0.5), the Q values are higher near the center due to strong κ from central mass. It drops to Q ~ 1 around 0.5-1.0 making the dosc marginally stable where the spiral instabilities are expected to grow first. At larger radii, the noise is due to few particles prensent in outer bins.
+
+![Q profile](toomre_q_profile.png)
+
+### Spiral Arm Formation
+
+For the marginal stable disc (σ_v=0.5), the spiral strength |A₂| starts near zero, rises to a peak around timestep 230, then decays and comes back. This pattern of formation and decaying is called transient spiral activity, spiral arms form, get wound up in diffrential rotation and then reform. This is consisten with what you expect from a disc near the Q=1 threshold.
+
+![Spiral strength](spiral_strength_comparison.png)
+
+### Effect of Q on Spiral Strength
+ 
+I ran three simulations with the same setup but different σ_v to change Q:
+ 
+| Simulation | σ_v | Q regime | Result |
+|---|---|---|---|
+| Low dispersion | 0.1 | Q << 1 | Highest spiral strength, fastest growth |
+| Fiducial | 0.5 | Q ~ 1 | Moderate spiral strength, transient arms |
+| High dispersion | 2.0 | Q >> 1 | Weakest spiral strength |
+
+## Known Limitations
+
+**N is too small.** With only 500 particles, the spiral structure looks like clumping rather than smooth arms. Clean visual spirals need N > 10,000. Getting there would require rewriting the force computation in C or using a GPU.
+
+**Initial velocities are not perfect.** The circular velocity formula v = √(GM/r) only accounts for the central mass, not the disk's own gravity. I compensated with an empirical velocity boost factor (~1.15) but a proper treatment would require computing the full disk potential. This is a known limitation and is why the disk evolves away from the initial configuration somewhat.
+
+**Energy drift.** With dt=0.01 and ε=0.2, energy drifts by about 3.6% over 500 steps. This is acceptable for showing the qualitative physics but not good enough for precise measurements.
+
+**2D only.** Real disks are three dimensional and the disk thickness adds extra stability. This simulation is purely in the plane.
+
+## Dependencies
+ 
+```bash
+pip install numpy matplotlib
+```
+ 
+## How to Run
+ 
+```bash
+python simulation.py
+```
+ 
+Simulation parameters in `simulation.py`:
+ 
+```python
+N = 500
+M = 10.0
+Rd = 1.0
+sigma_v = 0.5
+dt = 0.01
+steps = 500
+```
+ 
+## Code Structure
+ 
+| File | Purpose |
+|---|---|
+| `barnes_hut.py` | QuadNode class, Barnes Hut force computation |
+| `initial_conditions.py` | make_disc() — exponential disk with circular velocities |
+| `leapfrog.py` | Single leapfrog timestep |
+| `simulation.py` | Main simulation loop |
+| `analysis.py` | Surface density, Toomre Q, spiral strength measurement |
+| `animation.py` | Visualization |
+ 
+## References
+ 
+Toomre, A. (1964). **On the gravitational stability of a disk of stars.** ApJ, 139, 1217.
+ 
+Toomre, A. & Toomre, J. (1972). **Galactic bridges and tails.** ApJ, 178, 623.
+ 
+Barnes, J. & Hut, P. (1986). **A hierarchical O(N log N) force-calculation algorithm.** Nature, 324, 446.
+ 
